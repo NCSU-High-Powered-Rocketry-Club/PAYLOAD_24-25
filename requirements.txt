@@ -1,4 +1,0 @@
-adafruit-circuitpython-bmp280
-adafruit-circuitpython-bno055
-adafruit-circuitpython-dht
-msgspec
