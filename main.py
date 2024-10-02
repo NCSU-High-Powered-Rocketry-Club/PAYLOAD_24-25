@@ -29,6 +29,7 @@ def main(args):
         # Early shutdown if interrupted
         payload.shutdown()
 
+    print(str(payload.CALLSIGN) + "-> Max Altitude: " + str(payload.stats.max_altitude))
     print("Program complete. Waiting for recovery.")
 
 
