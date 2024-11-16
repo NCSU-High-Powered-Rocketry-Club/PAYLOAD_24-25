@@ -131,68 +131,77 @@ class SubscaleSystem:
             return None  # Handle division by zero gracefully
 
     def parse_data(self, line: bytes):
-        print(f"Raw line: {line}")  # Log raw input for debugging
-
         try:
-            decoded = json.loads(line.decode("utf-8"))  # Decode the JSON data
-        except json.JSONDecodeError as e:
-            print(f"JSON Decode Error: {e}")
-            return
+            print(f"Raw line: {line}")  # Log raw input for debugging
 
-        # Map sensor data, with specific handling for `mag` values
-        self.data.update(decoded)
+            try:
+                decoded = json.loads(line.decode("utf-8"))  # Decode the JSON data
+            except json.JSONDecodeError as e:
+                print(f"JSON Decode Error: {e}")
+                return
 
-        # Fix `mag` to ensure correct reading
-        self.data["magn"]["x"] = decoded.get("mag", {}).get("x", 0.0)
-        self.data["magn"]["y"] = decoded.get("mag", {}).get("y", 0.0)
-        self.data["magn"]["z"] = decoded.get("mag", {}).get("z", 0.0)
+            # Map sensor data, with specific handling for `mag` values
+            self.data.update(decoded)
 
-        # Retrieve altitude sources
-        gps_altitude = self.data["gps"].get("alt")
-        arduino_altitude = self.data.get("altitude")
-        calculated_altitude = self.calculate_altitude(self.data["pressure"], self.data["temperature"])
+            # Fix `mag` to ensure correct reading
+            self.data["magn"]["x"] = decoded.get("mag", {}).get("x", 0.0)
+            self.data["magn"]["y"] = decoded.get("mag", {}).get("y", 0.0)
+            self.data["magn"]["z"] = decoded.get("mag", {}).get("z", 0.0)
 
-        # Calculate battery percentage
-        battery_status = self.calculate_battery_status(self.data["voltage"])
+            # Retrieve altitude sources
+            if self.data.get("gps", None):
+                gps_altitude = self.data["gps"].get("alt")
+                arduino_altitude = self.data.get("altitude")
+                calculated_altitude = self.calculate_altitude(self.data["pressure"], self.data["temperature"])
+            else:
+                gps_altitude = -1
+                arduino_altitude = -1
+                calculated_altitude = -1
 
-        # Compact printout
-        print(f"\n--- Sensor Data ---")
-        print(f"Voltage: {self.data['voltage']:.4f} V (Battery: {battery_status}%) | Temp: {self.data['temperature']:.2f}°C | "
-              f"Pressure: {self.data['pressure']:.2f} Pa")
-        print(f"GPS Alt: {gps_altitude:.2f} m | Arduino Alt: {arduino_altitude:.2f} m | Calc Alt: {calculated_altitude:.2f} m")
-        print(f"Accel: X={self.data['accel']['x']:.2f}, Y={self.data['accel']['y']:.2f}, Z={self.data['accel']['z']:.2f}")
-        print(f"Gyro: X={self.data['gyro']['x']:.2f}, Y={self.data['gyro']['y']:.2f}, Z={self.data['gyro']['z']:.2f}")
-        print(f"Mag: X={self.data['magn']['x']:.2f}, Y={self.data['magn']['y']:.2f}, Z={self.data['magn']['z']:.2f}")
-        print(f"Quat: i={self.data['quat']['i']:.2f}, j={self.data['quat']['j']:.2f}, k={self.data['quat']['k']:.2f}, real={self.data['quat']['real']:.2f}")
-        print(f"GPS: Lat={self.data['gps']['lat']}, Lon={self.data['gps']['lon']}")
-        print("-------------------\n")
 
-        # Write data to CSV
-        self.writer.writerow([
-            datetime.datetime.now().strftime("%H:%M:%S"),
-            self.data["voltage"],
-            battery_status,
-            self.data["temperature"],
-            self.data["pressure"],
-            gps_altitude,
-            arduino_altitude,
-            calculated_altitude,
-            self.data["accel"]["x"],
-            self.data["accel"]["y"],
-            self.data["accel"]["z"],
-            self.data["gyro"]["x"],
-            self.data["gyro"]["y"],
-            self.data["gyro"]["z"],
-            self.data["magn"]["x"],
-            self.data["magn"]["y"],
-            self.data["magn"]["z"],
-            self.data["quat"]["i"],
-            self.data["quat"]["j"],
-            self.data["quat"]["k"],
-            self.data["quat"]["real"],
-            self.data["gps"]["lat"],
-            self.data["gps"]["lon"],
-        ])
+            # Calculate battery percentage
+            battery_status = self.calculate_battery_status(self.data["voltage"])
+
+            # Compact printout
+            print(f"\n--- Sensor Data ---")
+            print(f"Voltage: {self.data['voltage']:.4f} V (Battery: {battery_status}%) | Temp: {self.data['temperature']:.2f}°C | "
+                f"Pressure: {self.data['pressure']:.2f} Pa")
+            print(f"GPS Alt: {gps_altitude:.2f} m | Arduino Alt: {arduino_altitude:.2f} m | Calc Alt: {calculated_altitude:.2f} m")
+            print(f"Accel: X={self.data['accel']['x']:.2f}, Y={self.data['accel']['y']:.2f}, Z={self.data['accel']['z']:.2f}")
+            print(f"Gyro: X={self.data['gyro']['x']:.2f}, Y={self.data['gyro']['y']:.2f}, Z={self.data['gyro']['z']:.2f}")
+            print(f"Mag: X={self.data['magn']['x']:.2f}, Y={self.data['magn']['y']:.2f}, Z={self.data['magn']['z']:.2f}")
+            print(f"Quat: i={self.data['quat']['i']:.2f}, j={self.data['quat']['j']:.2f}, k={self.data['quat']['k']:.2f}, real={self.data['quat']['real']:.2f}")
+            print(f"GPS: Lat={self.data['gps']['lat']}, Lon={self.data['gps']['lon']}")
+            print("-------------------\n")
+
+            # Write data to CS/deodeV
+            self.writer.writerow([
+                datetime.datetime.now().strftime("%H:%M:%S"),
+                self.data["voltage"],
+                battery_status,
+                self.data["temperature"],
+                self.data["pressure"],
+                gps_altitude,
+                arduino_altitude,
+                calculated_altitude,
+                self.data["accel"]["x"],
+                self.data["accel"]["y"],
+                self.data["accel"]["z"],
+                self.data["gyro"]["x"],
+                self.data["gyro"]["y"],
+                self.data["gyro"]["z"],
+                self.data["magn"]["x"],
+                self.data["magn"]["y"],
+                self.data["magn"]["z"],
+                self.data["quat"]["i"],
+                self.data["quat"]["j"],
+                self.data["quat"]["k"],
+                self.data["quat"]["real"],
+                self.data["gps"]["lat"],
+                self.data["gps"]["lon"],
+            ])
+        except:
+           print("An exception occured")
 
     def update(self):
         """Update the main payload state machine"""
