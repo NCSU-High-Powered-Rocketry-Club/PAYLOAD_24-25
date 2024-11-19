@@ -200,14 +200,17 @@ class SubscaleSystem:
                 self.data["gps"]["lat"],
                 self.data["gps"]["lon"],
             ])
-        except:
-           print("An exception occured")
+        except Exception as e:
+           print(f"An exception occured: {e}")
 
     def update(self):
         """Update the main payload state machine"""
-        line = self.serial_connection.readline().rstrip(b"\r\n")
-        self.parse_data(line)
-        self.csvfile.flush()
+        try:
+            line = self.serial_connection.readline().rstrip(b"\r\n")
+            self.parse_data(line)
+            self.csvfile.flush()
+        except Exception as e:
+            print(f"Oh no! Erorr {e}")
 
     def shutdown(self):
         self.running = False

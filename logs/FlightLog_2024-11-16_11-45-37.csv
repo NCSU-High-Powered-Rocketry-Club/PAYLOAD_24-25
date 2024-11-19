@@ -1,0 +1,1 @@
+Time,Voltage(V),Battery_Status(%),Temperature(C),Pressure(Pa),GPS_Altitude(m),Arduino_Altitude(m),Calculated_Altitude(m),Accel_X(m/s^2),Accel_Y(m/s^2),Accel_Z(m/s^2),Gyro_X,Gyro_Y,Gyro_Z,Mag_X,Mag_Y,Mag_Z,Quat_I,Quat_J,Quat_K,Quat_Real,Latitude,Longitude
