@@ -163,4 +163,4 @@ cython_debug/
 sensor_audio.wav
 test/.venv/
 test/Si4464Library/
-RPiTX/
+RPiTX/*
