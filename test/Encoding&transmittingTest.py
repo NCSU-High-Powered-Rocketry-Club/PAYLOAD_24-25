@@ -46,25 +46,24 @@ def restart_direwolf():
     print("Direwolf has been restarted.")
 
 def main():
-    while True:
-        setup_gpio()
-        config_path = '/home/pi/direwolf.conf'
-        print("Please enter the new beacon comment:")
-        new_comment = "test message 1!2@3#4$5%6^7&8*9(0)-_=+[{]}\|;:'""] " # Take user input for the new comment
+    setup_gpio()
+    config_path = '/home/pi/direwolf.conf'
+    print("Please enter the new beacon comment:")
+    new_comment = "test message 1!2@3#4$5%6^7&8*9(0)-_=+[{]}\|;:'""] " # Take user input for the new comment
 
-        if update_beacon_comment(config_path, new_comment):
-            print("Configuration updated successfully.")
-            pull_pin_low()  # Activate PTT via GPIO pin pull-down
-            restart_direwolf()
-            time.sleep(5)  # Duration for which the pin should remain low
-            pull_pin_high()  # Deactivate PTT via GPIO pin pull-up
-            print("Transmission complete. Pin reset.")
-            subprocess.run(['pkill', '-f', 'direwolf'], check=False)  # Try to stop Direwolf
+    if update_beacon_comment(config_path, new_comment):
+        print("Configuration updated successfully.")
+        pull_pin_low()  # Activate PTT via GPIO pin pull-down
+        restart_direwolf()
+        time.sleep(5)  # Duration for which the pin should remain low
+        pull_pin_high()  # Deactivate PTT via GPIO pin pull-up
+        print("Transmission complete. Pin reset.")
+        subprocess.run(['pkill', '-f', 'direwolf'], check=False)  # Try to stop Direwolf
 
-        else:
-            print("Failed to update the configuration. Please check the file and try again.")
+    else:
+        print("Failed to update the configuration. Please check the file and try again.")
 
-        cleanup_gpio()
+    cleanup_gpio()
 
 if __name__ == "__main__":
     main()
